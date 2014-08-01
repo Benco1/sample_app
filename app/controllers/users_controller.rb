@@ -12,6 +12,7 @@ class UsersController < ApplicationController
   def create # POST   /users       users_path           create a new user
   	@user = User.new(user_params) # Not the final implementation
   	if @user.save
+      sign_in @user
   		flash[:success] = "Welcome to the Sample App!"
   		redirect_to @user
   	else
