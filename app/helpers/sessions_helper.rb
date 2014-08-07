@@ -26,6 +26,10 @@ module SessionsHelper
   # is nil, the instance variable will be recalled through cross-referencing 
   # hashed browser cookie against that stored in db.
 
+  def current_user?(user)
+    user == current_user
+  end
+
   def signed_in?
     !current_user.nil?
   end
@@ -35,5 +39,14 @@ module SessionsHelper
                                   User.digest(User.new_remember_token))
     cookies.delete(:remember_token)
     self.current_user = nil
+  end
+
+  def redirect_back_or(default)
+    redirect_to(session[:return_to] || default)
+    session.delete(:return_to)
+  end
+
+  def store_location
+    session[:return_to] = request.url if request.get?
   end
 end
