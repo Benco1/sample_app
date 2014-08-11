@@ -5,10 +5,11 @@
 
 <ul class="users">
   <%= render @users %>
-  # Rather than @users.each do |user|, here, Rails can infer that @users
-  # is a list of User objects. When called with a collection of users,
-  # Rails automatically iterates through them and renders each one with the
-  # _user.html.erb partial.
 </ul>
 
 <%= will_paginate %>
+<!--
+# Rather than @users.each do |user|, here, Rails can infer that @users
+# is a list of User objects. When called with a collection of users,
+# Rails automatically iterates through them and renders each one with the
+# _user.html.erb partial. -->  

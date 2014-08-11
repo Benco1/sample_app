@@ -2,6 +2,7 @@ class UsersController < ApplicationController
   before_action :signed_in_user, only: [:index, :edit, :update, :destroy]
   # Checks signin status (see below) prior to 'edit' and 'update' actions
   # Redirects to signin_path unless signed in.
+  before_action :signed_in_cant_signup, only: [:new, :create]
   before_action :correct_user,   only: [:edit, :update]
   before_action :admin_user,     only: :destroy
 
@@ -44,9 +45,14 @@ class UsersController < ApplicationController
   end
 
   def destroy
-    User.find(params[:id]).destroy
-    flash[:success] = "User deleted."
-    redirect_to users_url
+    user_to_delete = User.find(params[:id])
+    if current_user?(user_to_delete)
+      redirect_to root_url
+    else
+      user_to_delete.destroy
+      flash[:success] = "User deleted."
+      redirect_to users_url
+    end
   end
 
   private
@@ -72,8 +78,14 @@ class UsersController < ApplicationController
     end
 
     def admin_user
-      unless current_user.admin? #&& !current_user?(user)
-        redirect_to (root_url) #, notice: "Cannot complete action"
+      unless current_user.admin?
+        redirect_to (root_url) 
+      end
+    end
+
+    def signed_in_cant_signup
+      if signed_in?
+        redirect_to root_url
       end
     end
 =begin

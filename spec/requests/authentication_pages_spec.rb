@@ -44,6 +44,9 @@ describe "Authentication" do
 
 	  	    it { should have_link('Sign in', 		  href: signin_path) }
 	  	    it { should_not have_link('Sign out',	  href: signout_path) }
+	  	    it { should_not have_link('Users',		  href: users_path) }
+	  	    it { should_not have_link('Profile',	  href: user_path(user)) }
+	  	    it { should_not have_link('Settings',	  href: edit_user_path(user)) }
 	  	  end
 	  	end
 	end
@@ -67,6 +70,17 @@ describe "Authentication" do
 		      expect(page).to have_title('Edit user')
 		    end
 		  end
+
+		  describe "on subsequent sign-ins" do
+		  	before do
+		  	  click_link "Sign out"
+		  	  sign_in user
+		    end
+
+		    it "should revert to the user's profile page (default)" do
+		      expect(page).to have_title(user.name)
+		    end
+		  end
 	    end
 
 	    describe "in the Users controller" do
@@ -87,6 +101,28 @@ describe "Authentication" do
 		  end
 		end
 	  end
+
+	  describe "as signed-in user" do
+	  	let(:user) { FactoryGirl.create(:user) }
+		let(:params) do
+          { user: { name: "Already", email: "signedin@example.com",
+        	password: user.password, password_confirmation: user.password } }
+      	end
+      	before do
+      	  sign_in user, no_capybara: true
+      	  post users_path, params
+      	end
+
+      	  describe "visiting the signup page" do
+      	  	before { visit signup_path }
+		  	specify { expect(response).to redirect_to(root_url) }
+      	  end
+
+		  describe "submitting to the post action" do
+		  	specify { expect(response).to redirect_to(root_url) }
+		  end
+	  end
+		
 
 	  describe "as wrong user" do
 	  	let(:user) { FactoryGirl.create(:user) }
@@ -115,6 +151,16 @@ describe "Authentication" do
 		  before { delete user_path(user) }
 		  specify { expect(response).to redirect_to(root_url) }
 		end
+	  end
+
+	  describe "as admin user" do
+	  	let(:admin) { FactoryGirl.create(:admin) }
+	  	before { sign_in admin, no_capybara: true }
+
+	  	describe "submitting DELETE request on self to the User#destroy action" do
+	  	  before { delete user_path(admin) }
+	  	  specify { expect(response).to redirect_to(root_url) }
+	  	end
 	  end
 	end
 end

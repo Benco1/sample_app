@@ -25,7 +25,7 @@ describe User do
 	  	@user.toggle!(:admin)
 	  end
 
-	  it { should be_admin } # Implies that user should have
+	  it { should be_admin } # Implies via RSpec that user should have
 	end					     # 'admin?' boolean method
 
 	describe "when name is not present" do
