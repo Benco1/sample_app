@@ -56,13 +56,26 @@ describe "Authentication" do
 	  describe "for non-signed-in users" do
 	    let(:user) { FactoryGirl.create(:user) }
 
+	    describe "in the Microposts controller" do
+
+		    describe "submitting to the create action" do
+		    	before { post microposts_path }
+			  	specify { expect(response).to redirect_to(signin_path) }
+			  end
+
+			  describe "submitting to the destroy action" do
+		    	before { delete micropost_path(FactoryGirl.create(:micropost)) }
+			  	specify { expect(response).to redirect_to(signin_path) }
+			  end
+			end
+
 	    describe "when attempting to visit a protected page" do
-		  before do
-		    visit edit_user_path(user)
-		    fill_in "Email",		with: user.email
-		    fill_in "Password",		with: user.password
-		    click_button "Sign in"
-		  end
+			  before do
+			    visit edit_user_path(user)
+			    fill_in "Email",		with: user.email
+			    fill_in "Password",		with: user.password
+			    click_button "Sign in"
+			  end
 
 		  describe "after signing in" do
 
@@ -85,9 +98,9 @@ describe "Authentication" do
 
 	    describe "in the Users controller" do
 
-	      describe "visiting the edit page" do
-	      	before { visit edit_user_path(user) }
-			it { should have_title('Sign in') }
+	    describe "visiting the edit page" do
+	     	before { visit edit_user_path(user) }
+				it { should have_title('Sign in') }
 		  end
 
 		  describe "submitting to the update action" do
@@ -104,19 +117,19 @@ describe "Authentication" do
 
 	  describe "as signed-in user" do
 	  	let(:user) { FactoryGirl.create(:user) }
-		let(:params) do
-          { user: { name: "Already", email: "signedin@example.com",
-        	password: user.password, password_confirmation: user.password } }
-      	end
-      	before do
-      	  sign_in user, no_capybara: true
-      	  post users_path, params
-      	end
+			let(:params) do
+        { user: { name: "Already", email: "signedin@example.com",
+        password: user.password, password_confirmation: user.password } }
+      end
+      before do
+      	sign_in user, no_capybara: true
+      	post users_path, params
+      end
 
-      	  describe "visiting the signup page" do
-      	  	before { visit signup_path }
+      describe "visiting the signup page" do
+      	before { visit signup_path }
 		  	specify { expect(response).to redirect_to(root_url) }
-      	  end
+      end
 
 		  describe "submitting to the post action" do
 		  	specify { expect(response).to redirect_to(root_url) }

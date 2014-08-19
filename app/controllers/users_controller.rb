@@ -13,6 +13,7 @@ class UsersController < ApplicationController
 
   def show # GET      /users/1     user_path(user)      page to show user
   	@user = User.find(params[:id])
+    @microposts = @user.microposts.paginate(page: params[:page])
   end
 
   def new # GET       /users/new   new_user_path        make new user page (signup)      
@@ -64,13 +65,7 @@ class UsersController < ApplicationController
 
     # Before filters
 
-    def signed_in_user
-      unless signed_in?
-        store_location
-        redirect_to signin_url, notice: "Please sign in."
-        # REPLACED: redirect_to signin_url, notice: "Please sign in." unless signed_in?
-      end
-    end
+    # signed_in_user moved to session_helper to be available to microposts_controller
 
     def correct_user
       @user = User.find(params[:id])
