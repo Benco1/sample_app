@@ -43,6 +43,17 @@ describe "Static pages" do
           expect(page).to have_content("#{user.microposts.count} micropost")
         end
       end
+
+      describe "should display stats and link to following/followers" do
+        let(:follower) { FactoryGirl.create(:user) }
+        before do
+          follower.follow!(user)
+          visit root_path
+        end
+
+        it { should have_link("#{user.followers.count} followers", href: followers_user_path(user)) }
+        it { should have_link("#{user.followed_users.count} following", href: following_user_path(user)) }
+      end
     end
   end
 
