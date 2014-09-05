@@ -38,8 +38,10 @@ class User < ActiveRecord::Base
 	end
 
 	def feed
+		Micropost.from_users_followed_by(self)
+		
 		# Preliminary code (below)
-		Micropost.where("user_id = ?", id)
+		# Micropost.where("user_id = ?", id)
 	end
 
 	def User.new_remember_token
