@@ -78,6 +78,23 @@ describe "User pages" do
       # Active Record to SQL COUNT method with user_id filter ..?
     end
 
+    describe "stats with links to following/followers" do
+      let(:follower) { FactoryGirl.create(:user) }
+      let(:followed) { FactoryGirl.create(:user) }
+      before do
+        follower.follow!(user)
+        user.follow!(followed)
+        sign_in user
+        visit user_path(user)
+      end
+
+      it { should have_link("#{user.followers.count} followers",
+            href: followers_user_path(user)) }
+
+      it { should have_link("#{user.followed_users.count} following",
+            href: following_user_path(user)) }
+    end
+
     describe "follow/unfollow buttons" do
       let(:other_user) { FactoryGirl.create(:user) }
       before { sign_in user }
